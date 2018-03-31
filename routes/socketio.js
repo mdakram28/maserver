@@ -20,6 +20,12 @@ try {
 	var sellPin = new Gpio(17, 'out');
 	var buyPin = new Gpio(18, 'out');
 	var forwardPin = new Gpio(19, 'out');
+
+	process.on('SIGINT', function () {
+		sellPin.unexport();
+		buyPin.unexport();
+		forwardPin.unexport();
+	});
 	console.log("GPIO Initialized");
 } catch (err) {
 	isPi = false;
@@ -73,11 +79,11 @@ function init() {
 					var newState = JSON.parse(body);
 					if (JSON.stringify(state) != JSON.stringify(newState)) {
 						console.log("State modified : " + JSON.stringify(state) + " --> " + JSON.stringify(newState));
-						if(socket)socket.emit("sync", newState);
+						if (socket) socket.emit("sync", newState);
 						Object.assign(state, newState);
 						updatePins();
-					}else{
-						Object.assign(state, newState);						
+					} else {
+						Object.assign(state, newState);
 					}
 				} else {
 					registered = false;
@@ -103,7 +109,7 @@ function sendState(newState, cb) {
 
 var socket;
 module.exports = function (io) {
-	
+
 	io.on("connection", newSocket => {
 		socket = newSocket;
 		console.log("New Socket connected : ", socket.id);
