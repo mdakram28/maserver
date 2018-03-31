@@ -56,9 +56,9 @@ function init() {
 	function updatePins() {
 		if (isPi) {
 			console.log(state[id].selling, state[id].buying, state[id].forwarding);
-			sellPin.writeSync(state[id].selling ? 0 : 1);
-			buyPin.writeSync(state[id].buying ? 0 : 1);
-			forwardPin.writeSync(state[id].forwarding ? 0 : 1);
+			sellPin.writeSync(state[id].selling ? 1 : 0);
+			buyPin.writeSync(state[id].buying ? 1 : 0);
+			forwardPin.writeSync(state[id].forwarding ? 1 : 0);
 		}
 	}
 
