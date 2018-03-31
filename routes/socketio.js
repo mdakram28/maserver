@@ -11,7 +11,7 @@ var isPi = true;
 try {
 	var Gpio = require("onoff").Gpio;
 	var forwardPinNums = [17,18,19];
-	var forwardPins = forwardPinNums.map(pinNum => new Gpio(17, 'out'));
+	var forwardPins = forwardPinNums.map(pinNum => new Gpio(pinNum, 'out'));
 
 	process.on('SIGINT', () => {
 		forwardPins.forEach(pin => {
