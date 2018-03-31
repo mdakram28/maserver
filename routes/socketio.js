@@ -49,6 +49,7 @@ function init() {
 
 	function updatePins() {
 		if (isPi) {
+			console.log(state[id].selling, state[id].buying, state[id].forwarding);
 			sellPin.write(state[id].selling ? 1 : 0, err => { if (err) console.log(err); });
 			buyPin.write(state[id].buying ? 1 : 0, err => { if (err) console.log(err); });
 			forwardPin.write(state[id].forwarding ? 1 : 0, err => { if (err) console.log(err); });
