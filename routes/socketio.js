@@ -15,7 +15,7 @@ try {
 
 	process.on('SIGINT', () => {
 		forwardPins.forEach(pin => {
-			forwardPins.unexport();
+			pin.unexport();
 		});
 	});
 	console.log("GPIO Initialized");
