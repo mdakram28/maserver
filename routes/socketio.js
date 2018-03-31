@@ -48,6 +48,7 @@ function init() {
 	function updatePins() {
 		if(!isPi)return;
 		neighbours.forEach((neighbour, index) => {
+			console.log(`FORWARD TO ${neighbour} : ${state[id].forwarding.indexOf(neighbour) >= 0}`);
 			if(state[id].forwarding.indexOf(neighbour) >= 0) {
 				forwardPins[index].writeSync(0);
 			}else{
