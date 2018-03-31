@@ -3,7 +3,9 @@ const request = require("request");
 const fs = require("fs");
 var id;
 
-if (fs.existsSync("id.txt")) {
+if (process.env.ID) {
+	id = parseInt(process.env.ID);
+} else if (fs.existsSync("id.txt")) {
 	id = parseInt(fs.readFileSync("id.txt", "utf8"));
 } else {
 	id = Math.floor(Math.random() * 1000);
@@ -12,13 +14,14 @@ if (fs.existsSync("id.txt")) {
 
 console.log("ID : " + id);
 
-var prod = true;
+var isPi = true;
 try {
 	var Gpio = require("onoff").Gpio;
 	var sellPin = new Gpio(17, 'out');
 	var buyPin = new Gpio(18, 'out');
+	var forwardPin = new Gpio(19, 'out');
 } catch (err) {
-	prod = false;
+	isPi = false;
 }
 
 const coord = "http://mdakram28-pc:4000";
@@ -42,6 +45,14 @@ function init() {
 		request(coord + "/sync", cb);
 	}
 
+	function updatePins() {
+		if (isPi) {
+			sellPin.write(state[id].selling ? 1 : 0, err => { if (err) console.log(err); });
+			buyPin.write(state[id].buying ? 1 : 0, err => { if (err) console.log(err); });
+			forwardPin.write(state[id].forwarding ? 1 : 0, err => { if (err) console.log(err); });
+		}
+	}
+
 	function loop() {
 		if (!registered) {
 			console.log("Trying to register ...");
@@ -59,6 +70,8 @@ function init() {
 					var newState = JSON.parse(body);
 					if (JSON.stringify(state) != JSON.stringify(newState)) {
 						console.log("State modified : " + JSON.stringify(state) + " --> " + JSON.stringify(newState));
+						if(socket)socket.emit("sync", newState);
+						updatePins();
 					}
 					Object.assign(state, newState);
 				} else {
@@ -72,44 +85,44 @@ function init() {
 	setTimeout(loop, 1000);
 }
 
-function sendState(cb) {
-	request(coord + "/setState?id=" + id + "&state=" + encodeURIComponent(JSON.stringify(state[id])), (err, res, body) => {
-		if(err || res.statusCode!=200){
+function sendState(newState, cb) {
+	newState = Object.assign(JSON.parse(JSON.stringify(state[id])), newState);
+	request(coord + "/setState?id=" + id + "&state=" + encodeURIComponent(JSON.stringify(newState)), (err, res, body) => {
+		if (err || res.statusCode != 200) {
 			registered = false;
 		}
-		if(cb)cb(err);
+		if (cb) cb(err);
 	});
 }
 
 
-
+var socket;
 module.exports = function (io) {
-	io.on("connection", socket => {
+	
+	io.on("connection", newSocket => {
+		socket = newSocket;
 		console.log("New Socket connected : ", socket.id);
+		socket.emit("sync", state);
+		socket.emit("id", id);
 
 		socket.on("start_selling", () => {
 			console.log("Start selling received");
-			state[id].selling = true;
-			sendState();
-			// if (prod) sellPin.write(1, err => { if (err) console.log(err); });
+			sendState({ selling: true });
 		});
 
 		socket.on("stop_selling", () => {
 			console.log("Stop selling received");
-			state[id].selling = false;
-			sendState();
+			sendState({ selling: false });
 		});
 
 		socket.on("start_buying", () => {
 			console.log("Start buying received");
-			state[id].buying = true;
-			sendState();
+			sendState({ buying: true });
 		});
 
 		socket.on("stop_buying", () => {
 			console.log("Stop buying received");
-			state[id].buying = false;
-			sendState();
+			sendState({ buying: false });
 		});
 
 	});
