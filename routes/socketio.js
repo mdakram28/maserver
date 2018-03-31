@@ -1,30 +1,22 @@
 const io = require("socket.io-client");
 const request = require("request");
 const fs = require("fs");
-var id;
-
-if (process.env.ID) {
-	id = parseInt(process.env.ID);
-} else if (fs.existsSync("id.txt")) {
-	id = parseInt(fs.readFileSync("id.txt", "utf8"));
-} else {
-	id = Math.floor(Math.random() * 1000);
-	fs.writeFileSync("id.txt", id.toString());
-}
+const config = (process.env.CONFIG && JSON.parse(process.env.CONFIG)) || require("../config.json");
+var id = config.id;
+var neighbours = config.neighbours;
 
 console.log("ID : " + id);
 
 var isPi = true;
 try {
 	var Gpio = require("onoff").Gpio;
-	var sellPin = new Gpio(17, 'out');
-	var buyPin = new Gpio(18, 'out');
-	var forwardPin = new Gpio(19, 'out');
+	var forwardPinNums = [17,18,19];
+	var forwardPins = forwardPinNums.map(pinNum => new Gpio(17, 'out'));
 
-	process.on('SIGINT', function () {
-		sellPin.unexport();
-		buyPin.unexport();
-		forwardPin.unexport();
+	process.on('SIGINT', () => {
+		forwardPins.forEach(pin => {
+			forwardPins.unexport();
+		});
 	});
 	console.log("GPIO Initialized");
 } catch (err) {
@@ -37,7 +29,7 @@ const state = {
 	[id]: {
 		buying: false,
 		selling: false,
-		forwarding: false
+		forwarding: []
 	}
 };
 
@@ -47,19 +39,21 @@ var registered = false;
 function init() {
 
 	function register(cb) {
-		request(coord + "/register?id=" + id + "&state=" + encodeURIComponent(JSON.stringify(state[id])), cb);
+		request(coord + "/register?config=" + encodeURIComponent(JSON.stringify(config)) + "&state=" + encodeURIComponent(JSON.stringify(state[id])), cb);
 	}
 	function sync(cb) {
 		request(coord + "/sync", cb);
 	}
 
 	function updatePins() {
-		if (isPi) {
-			console.log(state[id].selling, state[id].buying, state[id].forwarding);
-			sellPin.writeSync(state[id].selling ? 0 : 1);
-			buyPin.writeSync(state[id].buying ? 0 : 1);
-			forwardPin.writeSync(state[id].forwarding ? 0 : 1);
-		}
+		if(!isPi)return;
+		neighbours.forEach((neighbour, index) => {
+			if(state[id].forwarding.indexOf(neighbour) >= 0) {
+				forwardPins[index].writeSync(0);
+			}else{
+				forwardPins[index].writeSync(1);
+			}
+		});
 	}
 
 	function loop() {
