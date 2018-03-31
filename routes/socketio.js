@@ -73,9 +73,11 @@ function init() {
 					if (JSON.stringify(state) != JSON.stringify(newState)) {
 						console.log("State modified : " + JSON.stringify(state) + " --> " + JSON.stringify(newState));
 						if(socket)socket.emit("sync", newState);
+						Object.assign(state, newState);
 						updatePins();
+					}else{
+						Object.assign(state, newState);						
 					}
-					Object.assign(state, newState);
 				} else {
 					registered = false;
 				}
