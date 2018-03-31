@@ -3,14 +3,14 @@ const request = require("request");
 const fs = require("fs");
 var id;
 
-if(fs.existsSync("id.txt")){
+if (fs.existsSync("id.txt")) {
 	id = parseInt(fs.readFileSync("id.txt", "utf8"));
-}else{
+} else {
 	id = Math.floor(Math.random() * 1000);
 	fs.writeFileSync("id.txt", id.toString());
 }
 
-console.log("ID : "+id);
+console.log("ID : " + id);
 
 var prod = true;
 try {
@@ -72,6 +72,15 @@ function init() {
 	setTimeout(loop, 1000);
 }
 
+function sendState(cb) {
+	request(coord + "/setState?id=" + id + "&state=" + encodeURIComponent(JSON.stringify(state[id])), (err, res, body) => {
+		if(err || res.statusCode!=200){
+			registered = false;
+		}
+		if(cb)cb(err);
+	});
+}
+
 
 
 module.exports = function (io) {
@@ -81,25 +90,26 @@ module.exports = function (io) {
 		socket.on("start_selling", () => {
 			console.log("Start selling received");
 			state[id].selling = true;
+			sendState();
 			// if (prod) sellPin.write(1, err => { if (err) console.log(err); });
 		});
 
 		socket.on("stop_selling", () => {
 			console.log("Stop selling received");
 			state[id].selling = false;
-			// if (prod) sellPin.write(0, err => { if (err) console.log(err); });
+			sendState();
 		});
 
 		socket.on("start_buying", () => {
 			console.log("Start buying received");
 			state[id].buying = true;
-			// if (prod) buyPin.write(1, err => { if (err) console.log(err); });
+			sendState();
 		});
 
 		socket.on("stop_buying", () => {
 			console.log("Stop buying received");
 			state[id].buying = false;
-			// if (prod) buyPin.write(0, err => { if (err) console.log(err); });
+			sendState();
 		});
 
 	});
