@@ -20,8 +20,10 @@ try {
 	var sellPin = new Gpio(17, 'out');
 	var buyPin = new Gpio(18, 'out');
 	var forwardPin = new Gpio(19, 'out');
+	console.log("GPIO Initialized");
 } catch (err) {
 	isPi = false;
+	console.log("GPIO not found. Running headless.");
 }
 
 const coord = "http://mdakram28-pc:4000";
