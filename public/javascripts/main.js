@@ -1,29 +1,52 @@
 var socket = io();
-var id = 0;
+var scope;
 
 socket.on("connect", () => {
 	console.log("Connected : ", socket.id);
 });
 
+socket.on("id", newId => {
+	scope.id = newId;
+	scope.$apply();
+});
+
 socket.on("sync", newState => {
 	console.log(newState);
-	document.getElementById("state").innerHTML = JSON.stringify(newState, null, 4);
+	scope.state = newState;
+	scope.$apply();
 });
 
-socket.on("id", newId => {
-	id = newId;
-	document.getElementById("id").innerHTML = id;
+socket.on("config", newConfig => {
+	scope.config = newConfig;
+	scope.$apply();
 });
 
-function startSelling() {
-	socket.emit("start_selling");
-}
-function stopSelling() {
-	socket.emit("stop_selling");
-}
-function startBuying() {
-	socket.emit("start_buying");
-}
-function stopBuying() {
-	socket.emit("stop_buying");
-}
+var app = angular.module("app", []);
+
+app.controller("MainPageController", ['$scope', ($scope) => {
+	scope = $scope;
+	$scope.state = {};
+
+	$scope.config = {
+		id: 0,
+		neighbours: []
+	}
+
+	$scope.id = 0;
+
+	console.log("Initialized");
+
+	$scope.startSelling = function() {
+		socket.emit("start_selling");
+	}
+	$scope.stopSelling = function() {
+		socket.emit("stop_selling");
+	}
+	$scope.startBuying = function() {
+		socket.emit("start_buying");
+	}
+	$scope.stopBuying = function() {
+		socket.emit("stop_buying");
+	}
+	
+}])

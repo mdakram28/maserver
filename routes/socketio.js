@@ -68,7 +68,7 @@ function init() {
 				setTimeout(loop, 1000);
 			});
 		} else {
-			console.log("Sync ...");
+			// console.log("Sync ...");
 			sync((err, res, body) => {
 				if (!err && res.statusCode == 200) {
 					var newState = JSON.parse(body);
@@ -110,6 +110,7 @@ module.exports = function (io) {
 		console.log("New Socket connected : ", socket.id);
 		socket.emit("sync", state);
 		socket.emit("id", id);
+		socket.emit("config", config);
 
 		socket.on("start_selling", () => {
 			console.log("Start selling received");
