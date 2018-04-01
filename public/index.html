@@ -30,11 +30,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Dgrid</a>
+				<a class="navbar-brand" href="index.html">Dgrid</a>
             </div>
 
             <div class="header-right">
-
+				<!-- <h2 style="display:inline-block; float: left">{{id}}</h2> -->
                 <a href="message-task.html" class="btn btn-info" title="New Message"><b>30 </b><i class="fa fa-envelope-o fa-2x"></i></a>
                 <a href="message-task.html" class="btn btn-primary" title="New Task"><b>40 </b><i class="fa fa-bars fa-2x"></i></a>
                 <a href="login.html" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a>
@@ -48,8 +48,8 @@
                     <li>
                         <div class="user-img-div">
                             <img src="stylesheets/img/user.png" class="img-thumbnail" />
-
                             <div class="inner-text">
+								<h3><bold>{{id}}</bold><br/></h3>
                                 Dhiraj Kumar Jain
                             <br />
                                 <small>Last Login : 2 Weeks Ago </small>
@@ -103,7 +103,6 @@
 
                     </div>
 				</div>
-				{{state}}
                 <!-- /. ROW  -->
                 <div class="row">
                     <div class="col-md-3">
@@ -319,7 +318,7 @@
 		<hr/>-->
 		Balance : 100 Eth
 
-		<textarea id="state" cols="100" rows="20">
+		<textarea id="state" cols="100" rows="20" ng-bind="prettyState">
 		</textarea>
 
 

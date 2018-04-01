@@ -13,6 +13,7 @@ socket.on("id", newId => {
 socket.on("sync", newState => {
 	console.log(newState);
 	scope.state = newState;
+	scope.prettyState = JSON.stringify(newState, null, 4);
 	scope.$apply();
 });
 
