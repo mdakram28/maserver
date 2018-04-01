@@ -5,7 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dgrid-Distributed Electricity Grid</title>
-
+    <script src="/socket.io/socket.io.js"></script>
+	<script src="/javascripts/main.js"></script>
     <!-- BOOTSTRAP STYLES-->
     <link href="stylesheets/bootstrap.css" rel="stylesheet" />
     <!-- FONTAWESOME STYLES-->
@@ -102,28 +103,24 @@
                 </div>
                 <!-- /. ROW  -->
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="main-box mb-red">
-                            <a href="#">
-                                <i class="fa fa-bolt fa-5x"></i>
-                                <h5>Zero Issues</h5>
-                            </a>
+                            <button onclick="startSelling()" type="button" class="btn btn-danger">Start Selling</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="main-box mb-dull">
-                            <a href="#">
-                                <i class="fa fa-plug fa-5x"></i>
-                                <h5>Selling Mode On</h5>
-                            </a>
+                            <button onclick="stopSelling()" type="button" class="btn btn-danger">Stop Selling</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="main-box mb-pink">
-                            <a href="#">
-                                <i class="fa fa-dollar fa-5x"></i>
-                                <h5>200 eth Pending</h5>
-                            </a>
+                    <div class="col-md-3">
+                        <div class="main-box mb-red">
+                            <button onclick="startBuying()" type="button" class="btn btn-danger">Start Buying</button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="main-box mb-dull">
+                            <button onclick="stopBuying()" type="button" class="btn btn-danger">Stop Buying</button>
                         </div>
                     </div>
 
@@ -309,28 +306,18 @@
 
                     <div class="col-md-8">
 
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Username</th>
-                                        <th>User No.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td><span class="label label-danger"></span></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td><span class="label label-info"></span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <h2>ID : <span id="id"></span></h2>
+
+		<!--<button onclick="startSelling()">Start Selling</button>
+		<button onclick="stopSelling()">Stop Selling</button>
+		<hr/>
+		<button onclick="startBuying()">Start Buying</button>
+		<button onclick="stopBuying()">Stop Buying</button>
+		<hr/>-->
+		Balance : 100 Eth
+
+		<textarea id="state" cols="100" rows="20">
+		</textarea>
 
 
 
@@ -364,7 +351,7 @@
 
 </body>
 </html>
-=======
+<!--
 <html>
 	<head>
 		<title>DGRID: Dashboard</title>
@@ -387,3 +374,4 @@
 		</textarea>
 	</body>
 </html>
+-->
